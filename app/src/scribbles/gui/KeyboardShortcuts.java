@@ -13,6 +13,11 @@ public class KeyboardShortcuts
 {
 	private static final int shortcutKey = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(); //returns Ctrl on Windows/Linux, Cmd on Mac
 
+	public static final KeyboardShortcuts closeWindow = new KeyboardShortcuts(
+			"Close Window",
+			"Closes the current notebook window",
+			KeyStroke.getKeyStroke('W', shortcutKey)
+	);
 	public static final KeyboardShortcuts newNotebook = new KeyboardShortcuts(
 			"New Notebook",
 			"Creates a new notebook",

@@ -150,7 +150,9 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 					.menuItem("Save notebook", (e) -> saveNotebook(), KeyboardShortcuts.saveNotebook, Utils.OS.all() )
 					.seperator()
 					.menuItem("New note", (e) -> setActiveNote( createNote() ), KeyboardShortcuts.newNote, Utils.OS.all() )
-					.menuItem("Duplicate active note", duplicateRef, (e) -> duplicateActiveNote(), KeyboardShortcuts.duplicateActiveNote, Utils.OS.all() ),
+					.menuItem("Duplicate active note", duplicateRef, (e) -> duplicateActiveNote(), KeyboardShortcuts.duplicateActiveNote, Utils.OS.all() )
+					.seperator()
+					.menuItem("Close window", (e) -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)), KeyboardShortcuts.closeWindow, Utils.OS.all() ),
 				new JMenuBuilder("Edit")
 					.menuItem("Undo", undoRef, (e) -> undo(), KeyboardShortcuts.undo, Utils.OS.all() )
 					.menuItem("Redo", redoRef, (e) -> redo(), KeyboardShortcuts.redo, Utils.OS.all() )
