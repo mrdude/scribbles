@@ -43,6 +43,11 @@ public class KeyboardShortcuts
 			"Minimizes the current window",
 			KeyStroke.getKeyStroke('M', shortcutKey)
 	);
+	public static final KeyboardShortcuts noteSearch = new KeyboardShortcuts(
+			"Search",
+			"Searches the current notebook",
+			KeyStroke.getKeyStroke('/', shortcutKey)
+	);
 
 	//notes
 	public static final KeyboardShortcuts newNote = new KeyboardShortcuts(

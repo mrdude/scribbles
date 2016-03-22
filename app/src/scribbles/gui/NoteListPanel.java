@@ -71,7 +71,6 @@ public class NoteListPanel extends JTree
 				return "Notes";
 			}
 		};
-		private final List<TreeModelListener> listeners = new ArrayList<>();
 
 		void noteCreated(Note n)
 		{
