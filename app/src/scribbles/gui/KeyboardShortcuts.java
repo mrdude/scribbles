@@ -38,6 +38,11 @@ public class KeyboardShortcuts
 			"Places cursor focus on the edit window",
 			KeyStroke.getKeyStroke('E', shortcutKey)
 	);
+	public static final KeyboardShortcuts focusOnList = new KeyboardShortcuts(
+			"Focus on Note List Window",
+			"Places cursor focus on the note list window",
+			KeyStroke.getKeyStroke('L', shortcutKey)
+	);
 	public static final KeyboardShortcuts minimizeCurrentWindow = new KeyboardShortcuts(
 			"Minimize",
 			"Minimizes the current window",

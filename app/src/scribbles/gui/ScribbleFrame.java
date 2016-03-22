@@ -160,6 +160,7 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 					.menuItem("Paste", (e) -> new DefaultEditorKit.PasteAction(), KeyboardShortcuts.paste, Utils.OS.all() )
 					.seperator()
 					.menuItem("Focus on Note Edit Window", (e) -> activeNoteContainer.requestFocusInWindow(), KeyboardShortcuts.focusOnEdit, Utils.OS.all() )
+					.menuItem("Focus on Note List Window", (e) -> noteList.requestFocusInWindow(), KeyboardShortcuts.focusOnList, Utils.OS.all() )
 					.menuItem("Settings", (e) -> PreferencesDialog.show(), Utils.OS.allExcept(Utils.OS.MAC) ),
 				new JMenuBuilder("Window")
 					.menuItem("Minimize", (e) -> setState(ICONIFIED), KeyboardShortcuts.minimizeCurrentWindow, Utils.OS.all() )

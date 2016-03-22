@@ -44,6 +44,19 @@ public class NoteListPanel extends JTree
 		return (CustomTreeModel)super.getModel();
 	}
 
+	public void paint(Graphics graphics)
+	{
+		super.paint(graphics);
+
+		if( !hasFocus() )
+		{
+			Graphics g = graphics.create();
+			g.setColor( new Color(200, 200, 200, 64) );
+			g.fillRect( 0, 0, getWidth(), getHeight() );
+			g.dispose();
+		}
+	}
+
 	/** This is called by ScribbleFrame when a new note is created */
 	void onNewNote(final Note n)
 	{
@@ -61,6 +74,25 @@ public class NoteListPanel extends JTree
 	{
 		final TreePath path = new TreePath( new Object[] { getModel().rootObject, newActiveNote } );
 		setSelectionPath( path );
+	}
+
+	public boolean requestFocusInWindow()
+	{
+		if( super.requestFocusInWindow() )
+		{
+			if( getSelectionPath() == null )
+			{
+				if( notebook.getActiveNote() != null )
+					setSelectionPath(new TreePath(new Object[]{getModel().rootObject, notebook.getActiveNote()}));
+				else
+					setSelectionPath(new TreePath(new Object[]{getModel().rootObject}));
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	private class CustomTreeModel extends AbstractTreeModel implements TreeModel

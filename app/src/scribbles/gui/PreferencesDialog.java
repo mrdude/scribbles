@@ -29,15 +29,23 @@ public class PreferencesDialog
 		final KeystrokeTextfield keystrokeField = new KeystrokeTextfield();
 		final JTextArea shortcutDesc = new JTextArea();
 		shortcutDesc.setEditable( false );
+		shortcutDesc.setBorder( BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Description") );
 
 		centerPanel.setLayout( new GridLayout(0, 1) );
+		centerPanel.setBorder( BorderFactory.createRaisedBevelBorder() );
 		centerPanel.add( keystrokeField );
 		centerPanel.add( new JLabel("Press Esc to clear") );
 		centerPanel.add( shortcutDesc );
 		prefs.add( centerPanel, BorderLayout.CENTER );
 
+		final JPanel treePanel = new JPanel();
+		treePanel.setBorder( BorderFactory.createEmptyBorder(0, 0, 0, 2) );
+		treePanel.setLayout( new FlowLayout() );
+
 		final JTree tree = new JTree( new KeyboardShortcutTreeModel() );
-		prefs.add( new JScrollPane(tree), BorderLayout.WEST );
+		treePanel.add( new JScrollPane(tree) );
+
+		prefs.add( treePanel, BorderLayout.WEST );
 
 		final JButton closeButton = new JButton("Close");
 		final JButton applyButton = new JButton("Apply");
@@ -77,6 +85,7 @@ public class PreferencesDialog
 
 		final JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout( new FlowLayout( FlowLayout.TRAILING ) );
+		buttonPanel.setBorder( BorderFactory.createEmptyBorder(2, 0, 0, 0) );
 		buttonPanel.add( okButton );
 		buttonPanel.add( applyButton );
 		buttonPanel.add( closeButton );
@@ -86,13 +95,14 @@ public class PreferencesDialog
 		prefs.setVisible(true);
 	}
 
-	private static class KeystrokeTextfield extends JTextField
+	private static class KeystrokeTextfield extends JPlaceholderTextField
 	{
 		private @Nullable KeyStroke keystroke;
 
 		public KeystrokeTextfield()
 		{
 			setEditable( false );
+			setPlaceholderText("Set your shortcut here");
 
 			addKeyListener(new KeyAdapter() {
 				@Override
