@@ -301,8 +301,8 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		}
 		else
 		{
-			notebook.updateSearch(searchString);
-			statusBar.onSearch(notebook.getSearchResults().size());
+			int searchResultCount = notebook.updateSearch(searchString);
+			statusBar.onSearch( searchResultCount );
 		}
 	}
 

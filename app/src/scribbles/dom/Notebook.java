@@ -13,7 +13,7 @@ public class Notebook
 	private final File file; //the file that this notebook is saved to
 	private final List<Note> noteList = new ArrayList<>();
 	private Note activeNote = null;
-	private final List<SearchResult> results = new ArrayList<>();
+	private final NotebookSearcher searcher = new NotebookSearcher(this);
 
 	private IOException ioException = null;
 
@@ -97,45 +97,25 @@ public class Notebook
 			noteList.add( new Note(str, false) );
 	}
 
-	/** Searches the notebook */
-	public void updateSearch(String searchString)
+	/**
+	 * Searches the notebook
+	 * @return the number of search results
+	 */
+	public int updateSearch(String searchString)
 	{
-		results.clear();
+		boolean needsRestyle = searcher.updateSearch(searchString);
 
-		if( !searchString.isEmpty() )
+		if( needsRestyle )
 		{
 			for( Note n : getNoteList() )
-			{
 				n.clearSearchHighlights();
 
-				final String docText = n.getDocumentText();
-				for( int x = docText.indexOf(searchString); x != -1 && x < docText.length() - searchString.length(); x = docText.indexOf(searchString, x + 1) )
-				{
-					int row = 0;
-					int col = 0;
-
-					for( int y = 0; y < x; y++ )
-					{
-						switch( docText.charAt(y) )
-						{
-							case '\n':
-								row++;
-								col = 0;
-							default:
-								col++;
-								break;
-						}
-					}
-
-					results.add( new SearchResult(n, row, col) );
-					n.addSearchHighlight(x, searchString.length());
-				}
+			for( SearchResult res : searcher )
+			{
+				res.n.addSearchHighlight( res.pos, searchString.length() );
 			}
 		}
-	}
 
-	public List<SearchResult> getSearchResults()
-	{
-		return results;
+		return searcher.getSearchResultCount();
 	}
 }

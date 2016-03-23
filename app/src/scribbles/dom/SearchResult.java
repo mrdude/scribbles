@@ -3,11 +3,13 @@ package scribbles.dom;
 public class SearchResult
 {
 	public final Note n;
+	public final int pos;
 	public final int row, col;
 
-	SearchResult(Note n, int row, int col)
+	SearchResult(Note n, int pos, int row, int col)
 	{
 		this.n = n;
+		this.pos = pos;
 		this.row = row;
 		this.col = col;
 	}
