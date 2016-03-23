@@ -4,7 +4,6 @@ import scribbles.Utils;
 import scribbles.dom.InvalidNotebookFormatException;
 import scribbles.dom.Note;
 import scribbles.dom.Notebook;
-import scribbles.dom.SearchResult;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -15,7 +14,6 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.List;
 
 /** A top level window. One window corresponds to one notebook. */
 public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowListener
@@ -234,6 +232,7 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		try
 		{
 			notebook.save();
+			noteList.onNotebookSaved();
 			//TODO add "Last Saved" to the status bar
 		}
 		catch( IOException e )

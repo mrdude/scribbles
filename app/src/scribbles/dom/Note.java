@@ -1,11 +1,14 @@
 package scribbles.dom;
 
+import org.jetbrains.annotations.Nullable;
+
 import javax.swing.text.*;
 import javax.swing.undo.UndoManager;
 
 public class Note extends DefaultStyledDocument implements StyledDocument
 {
 	private final UndoManager undoManager = new UndoManager();
+	private String lastSavedText = "";
 
 	public Note()
 	{
@@ -15,6 +18,14 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 	public Note(Note n)
 	{
 		this( n.getDocumentText() );
+	}
+
+	public Note(String initialText, boolean dirtyFlag)
+	{
+		this(initialText);
+
+		if( !dirtyFlag )
+			lastSavedText = initialText;
 	}
 
 	public Note(String initialText)
@@ -30,7 +41,9 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 			getStyle("note").addAttribute( StyleConstants.FontConstants.Bold, true );
 
 			insertString(0, initialText, null);
-			initUndoManager();
+
+			undoManager.setLimit(-1); //unlimited undos
+			addUndoableEditListener( undoManager::undoableEditHappened );
 		}
 		catch( BadLocationException e )
 		{
@@ -39,7 +52,17 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 		}
 	}
 
-	public void insertString(int offs, String str, AttributeSet a) throws BadLocationException
+	public boolean isDirty()
+	{
+		return !getDocumentText().equals( lastSavedText );
+	}
+
+	public void resetDirtyFlag()
+	{
+		lastSavedText = getDocumentText();
+	}
+
+	public void insertString(int offs, String str, @Nullable AttributeSet a) throws BadLocationException
 	{
 		super.insertString(offs, str, a);
 		styleText();
@@ -119,12 +142,6 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 		}
 	}
 
-	private void initUndoManager()
-	{
-		undoManager.setLimit(-1); //unlimited undos
-		addUndoableEditListener( undoManager::undoableEditHappened );
-	}
-
 	public boolean canUndo()
 	{
 		return undoManager.canUndo();
@@ -190,6 +207,6 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 	/** This returns the title of the note -- it is used by NoteListPanel's JTree */
 	public String toString()
 	{
-		return getTitle();
+		return (isDirty() ? "*" : "") +getTitle();
 	}
 }

@@ -84,6 +84,9 @@ public class Notebook
 	{
 		//TODO if the save fails in the middle of writing, you will be left with a half-written file. Come up with an atomic save operation.
 		NotebookWriter.save(file, noteList);
+
+		for( Note n : noteList )
+			n.resetDirtyFlag();
 	}
 
 	/** Loads the notebook from it's file */
@@ -91,7 +94,7 @@ public class Notebook
 	{
 		final NotebookReader r = NotebookReader.load(file);
 		for( String str : r.noteList )
-			noteList.add( new Note(str) );
+			noteList.add( new Note(str, false) );
 	}
 
 	/** Searches the notebook */

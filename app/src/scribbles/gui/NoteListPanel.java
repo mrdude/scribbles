@@ -6,12 +6,10 @@ import scribbles.dom.Notebook;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Lists all notes in the current notebook
@@ -28,6 +26,23 @@ public class NoteListPanel extends JTree
 
 		setBackground( Color.white );
 		setLayout( new BoxLayout(this, BoxLayout.Y_AXIS) );
+
+		setCellRenderer(new DefaultTreeCellRenderer() {
+			@Override
+			public Component getTreeCellRendererComponent(JTree tree, Object value,
+			                                              boolean selected,
+			                                              boolean expanded,
+			                                              boolean leaf,
+			                                              int row,
+			                                              boolean hasFocus)
+			{
+				String val = value.toString();
+				if( leaf && ((Note)value).isDirty() )
+					val = "* " +val;
+
+				return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+			}
+		});
 
 		//when the user clicks on a note, set that note as the active note
 		addTreeSelectionListener( (e) -> {
@@ -67,6 +82,12 @@ public class NoteListPanel extends JTree
 	void onNoteModified(final Note n)
 	{
 		getModel().valueForPathChanged(null, n);
+	}
+
+	/** This is called by ScribbleFrame when the notebook is saved */
+	void onNotebookSaved()
+	{
+		getModel().valueForRootChanged();
 	}
 
 	/** This is called by ScribbleFrame when the active note is changed */
@@ -141,6 +162,15 @@ public class NoteListPanel extends JTree
 		public void valueForPathChanged(TreePath path, Object newValue)
 		{
 			fireChangeEvent( (Note)newValue );
+		}
+
+		public void valueForRootChanged()
+		{
+			final TreeModelEvent evt = new TreeModelEvent( NoteListPanel.this,
+					new Object[] { rootObject }
+			);
+
+			fireChangeEvent(evt);
 		}
 
 		@Override
