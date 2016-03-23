@@ -147,30 +147,20 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 		}
 
 		//add search highlights
-		for( SearchHighlight h : searchHighlights )
-			setCharacterAttributes(h.from, h.len, getStyle("searchResult"), false);
+		for( SearchResult h : searchHighlights )
+			setCharacterAttributes(h.pos, h.len, getStyle("searchResult"), false);
 	}
 
-	private class SearchHighlight
-	{
-		private int from, len;
-		SearchHighlight(int from, int len)
-		{
-			this.from = from;
-			this.len = len;
-		}
-	}
-
-	private final List<SearchHighlight> searchHighlights = new ArrayList<>();
+	private final List<SearchResult> searchHighlights = new ArrayList<>();
 
 	void clearSearchHighlights()
 	{
 		searchHighlights.clear();
 	}
 
-	void addSearchHighlight(int from, int len)
+	void addSearchHighlight(SearchResult res)
 	{
-		searchHighlights.add( new SearchHighlight(from, len) );
+		searchHighlights.add( res );
 		styleText();
 	}
 

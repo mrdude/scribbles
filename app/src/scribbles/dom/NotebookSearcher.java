@@ -10,6 +10,7 @@ class NotebookSearcher implements Iterable<SearchResult>
 {
 	private final List<SearchResult> results = new ArrayList<>();
 	private final Notebook notebook;
+	private String oldSearchString = "";
 
 	NotebookSearcher(Notebook notebook)
 	{
@@ -22,6 +23,9 @@ class NotebookSearcher implements Iterable<SearchResult>
 	 */
 	public boolean updateSearch(String searchString)
 	{
+		if( searchString.equals(oldSearchString) )
+			return false;
+
 		results.clear();
 
 		if( !searchString.isEmpty() )
@@ -47,10 +51,12 @@ class NotebookSearcher implements Iterable<SearchResult>
 						}
 					}
 
-					results.add( new SearchResult(n, x, row, col) );
+					results.add( new SearchResult(n, x, searchString.length(), row, col) );
 				}
 			}
 		}
+
+		oldSearchString = searchString;
 
 		return true;
 	}

@@ -111,9 +111,7 @@ public class Notebook
 				n.clearSearchHighlights();
 
 			for( SearchResult res : searcher )
-			{
-				res.n.addSearchHighlight( res.pos, searchString.length() );
-			}
+				res.n.addSearchHighlight( res );
 		}
 
 		return searcher.getSearchResultCount();
