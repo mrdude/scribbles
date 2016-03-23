@@ -4,20 +4,18 @@ import scribbles.Utils;
 import scribbles.dom.InvalidNotebookFormatException;
 import scribbles.dom.Note;
 import scribbles.dom.Notebook;
+import scribbles.dom.SearchResult;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 
 /** A top level window. One window corresponds to one notebook. */
 public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowListener
@@ -27,7 +25,6 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 	private final ActiveNoteContainer activeNoteContainer; //holds onto the JEditorPane for the currently edited note
 	private final NoteListPanel noteList;
 	private final StatusBar statusBar;
-	private final SearchPopup searchPopup;
 
 	private JMenuItem undoMenuItem, redoMenuItem, duplicateMenuItem;
 	private JMenuItem windowListMenuItem;
@@ -50,7 +47,6 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		activeNoteContainer = new ActiveNoteContainer();
 		statusBar = new StatusBar(this, activeNoteContainer.getEditPane());
 		noteList = new NoteListPanel(this);
-		searchPopup = new SearchPopup();
 
 		//Add a document listener to all notes in the list so that we can update the NoteList when titles of notes change
 		for( Note n : notebook.getNoteList() )
@@ -78,8 +74,6 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		this.add( splitPane, BorderLayout.CENTER );
 		this.add( statusBar, BorderLayout.SOUTH );
 
-		this.getLayeredPane().add( searchPopup );
-
 		setJMenuBar( createMenuBar() );
 
 		pack();
@@ -87,15 +81,15 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 
 		splitPane.setDividerLocation( 0.25 );
 
-		//search key bindings
+		//updateSearch key bindings
 		final InputMap inputMap = getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
-		inputMap.put( KeyboardShortcuts.noteSearch.keystroke(), "search" );
+		inputMap.put( KeyboardShortcuts.noteSearch.keystroke(), "updateSearch" );
 		KeyboardShortcuts.noteSearch.addChangeListener( () -> {
 			inputMap.clear();
-			inputMap.put( KeyboardShortcuts.noteSearch.keystroke(), "search" );
+			inputMap.put( KeyboardShortcuts.noteSearch.keystroke(), "updateSearch" );
 		} );
 
-		getRootPane().getActionMap().put("search", new AbstractAction() {
+		getRootPane().getActionMap().put("updateSearch", new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
@@ -106,30 +100,22 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 			}
 		} );
 
-		//search text field listeners
+		//updateSearch text field listeners
 		final JTextField searchTextField = statusBar.getSearchTextField();
 		searchTextField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e)
 			{
-				if( !searchPopup.isVisible() )
-				{
-					searchPopup.setVisible(true);
-					searchTextField.requestFocusInWindow();
-				}
-
-				searchPopup.updateResults();
-
-				ScribbleFrame.this.repaint();
+				updateSearch( searchTextField.getText() );
 			}
 		});
 
-		searchTextField.addFocusListener(new FocusAdapter() {
+		searchTextField.addFocusListener(new FocusAdapter()
+		{
 			@Override
-			public void focusLost(FocusEvent e)
+			public void focusGained(FocusEvent e)
 			{
-				if( !searchPopup.hasFocus() )
-					searchPopup.setVisible(false);
+				updateSearch( searchTextField.getText() );
 			}
 		});
 	}
@@ -296,6 +282,19 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		ScribbleFrame.this.repaint();
 	}
 
+	private void updateSearch(String searchString)
+	{
+		if( searchString.isEmpty() )
+		{
+			statusBar.onSearch(-1);
+		}
+		else
+		{
+			notebook.updateSearch(searchString);
+			statusBar.onSearch(notebook.getSearchResults().size());
+		}
+	}
+
 	Notebook getNotebook()
 	{
 		return notebook;
@@ -396,102 +395,5 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 	public void windowDestroyed(ScribbleFrame win, int windowIndex)
 	{
 		windowListMenuItem.remove(windowIndex);
-	}
-
-	//search popup
-	private class SearchPopup extends JPanel implements SwingUtils
-	{
-		public SearchPopup()
-		{
-			final Border padding = BorderFactory.createLineBorder( Color.black, 1, true );
-			final Border border = BorderFactory.createTitledBorder(padding, "Search Results");
-			setBorder( border );
-
-			setLayout( new BoxLayout(this, BoxLayout.Y_AXIS) );
-
-			setVisible(true);
-		}
-
-		void updateResults()
-		{
-			removeAll();
-			runSearch();
-			if( getComponentCount() == 0 )
-				addSearchResult("No search results");
-
-			pack();
-			repaint();
-		}
-
-		private void runSearch()
-		{
-			final String searchString = statusBar.getSearchTextField().getText();
-			if( searchString.isEmpty() )
-				return;
-
-			for( Note n : notebook.getNoteList() )
-			{
-				final String docText = n.getDocumentText();
-				for( int x = docText.indexOf(searchString); x != -1 && x < docText.length() - searchString.length(); x = docText.indexOf(searchString, x+1) )
-				{
-					int row = 0;
-					int col = 0;
-
-					for( int y = 0; y < x; y++ )
-					{
-						switch( docText.charAt(y) )
-						{
-							case '\n':
-								row++;
-								col = 0;
-							default:
-								col++;
-								break;
-						}
-					}
-
-					addSearchResult( String.format("Result in '%s' @ %d:%d", n.getTitle(), row+1, col+1) );
-				}
-			}
-		}
-
-		public void pack()
-		{
-			Dimension dim = getPreferredSize();
-			dim.width = getWidth();
-			setSize( dim );
-			validate();
-		}
-
-		private void addSearchResult(String res)
-		{
-			JLabel item = new JLabel(res);
-			add(item);
-		}
-
-		public int getX()
-		{
-			return statusBar.getSearchTextField().getX();
-		}
-
-		public int getY()
-		{
-			//find the y coordinate of the search field, relative to the SearchPopup's parent
-			int y = 0;
-			Container cmp = statusBar.getSearchTextField();
-			while( cmp != null && cmp != getParent() )
-			{
-				y += cmp.getY();
-				cmp = cmp.getParent();
-			}
-
-			//set our y coordinate
-			return y - getHeight();
-		}
-
-		public int getWidth()
-		{
-			return statusBar.getSearchTextField().getWidth();
-		}
 	}
 }

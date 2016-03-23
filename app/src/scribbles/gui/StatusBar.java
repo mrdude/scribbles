@@ -12,6 +12,7 @@ import java.awt.event.*;
 public class StatusBar extends JPanel implements SwingUtils
 {
 	private final ScribbleFrame win;
+	private final JLabel searchResultLabel = new JLabel();
 	private final JPlaceholderTextField searchTextField;
 
 	public StatusBar(ScribbleFrame win, JEditorPane editPane)
@@ -61,6 +62,7 @@ public class StatusBar extends JPanel implements SwingUtils
 		add( notebookFilenameLabel );
 		add( new JSeparator(SwingConstants.VERTICAL) );
 		add( searchTextField );
+		add( searchResultLabel );
 		add( new JSeparator(SwingConstants.VERTICAL) );
 		add( caretPositionLabel );
 	}
@@ -68,5 +70,17 @@ public class StatusBar extends JPanel implements SwingUtils
 	public JTextField getSearchTextField()
 	{
 		return searchTextField;
+	}
+
+	void onSearch(int searchResultCount)
+	{
+		if( searchResultCount == -1 )
+		{
+			searchResultLabel.setText("");
+		}
+		else
+		{
+			searchResultLabel.setText("Found " +searchResultCount+ " result(s)");
+		}
 	}
 }
