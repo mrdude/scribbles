@@ -28,6 +28,9 @@ public class NoteListPanel extends JTree
 		setLayout( new BoxLayout(this, BoxLayout.Y_AXIS) );
 
 		setCellRenderer(new DefaultTreeCellRenderer() {
+			private final Icon defaultLeafIcon = getLeafIcon();
+			private final Icon dirtyLeafIcon = new CustomDirtyLeafIcon(getLeafIcon());
+
 			@Override
 			public Component getTreeCellRendererComponent(JTree tree, Object value,
 			                                              boolean selected,
@@ -36,9 +39,10 @@ public class NoteListPanel extends JTree
 			                                              int row,
 			                                              boolean hasFocus)
 			{
-				String val = value.toString();
 				if( leaf && ((Note)value).isDirty() )
-					val = "* " +val;
+					setLeafIcon( dirtyLeafIcon );
+				else
+					setLeafIcon( defaultLeafIcon );
 
 				return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 			}
@@ -197,6 +201,42 @@ public class NoteListPanel extends JTree
 					new Object[] { n } );
 
 			fireInsertEvent(evt);
+		}
+	}
+
+	private class CustomDirtyLeafIcon implements Icon
+	{
+		private final Icon base;
+
+		public CustomDirtyLeafIcon(Icon base)
+		{
+			this.base = base;
+		}
+
+		@Override
+		public void paintIcon(Component c, Graphics graphics, int x, int y)
+		{
+			base.paintIcon(c, graphics, x, y);
+
+			Graphics2D g = (Graphics2D)graphics.create();
+			g.setClip(0, 0, getIconWidth(), getIconHeight());
+			g.setColor( Color.red );
+			g.setStroke( new BasicStroke(4) );
+
+			g.drawLine( 0, 0, getIconHeight(), getIconHeight() );
+			g.drawLine( 0, getIconHeight(), getIconWidth(), 0 );
+		}
+
+		@Override
+		public int getIconWidth()
+		{
+			return base.getIconWidth();
+		}
+
+		@Override
+		public int getIconHeight()
+		{
+			return base.getIconHeight();
 		}
 	}
 }
