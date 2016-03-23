@@ -4,20 +4,14 @@ import org.jetbrains.annotations.Nullable;
 import scribbles.dom.Note;
 
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 /**
  * Holds onto the active note edit pane
  */
 public class ActiveNoteContainer extends JPanel
 {
-	private final JEditorPane editPane = new JEditorPane();
+	private final JTextPane editPane = new JTextPane();
 	private final JScrollPane scrollPane = new JScrollPane(editPane);
 
 	public ActiveNoteContainer()
@@ -49,7 +43,7 @@ public class ActiveNoteContainer extends JPanel
 		scrollPane.setVisible( note != null );
 
 		if( note != null )
-			editPane.setDocument(note);
+			editPane.setStyledDocument(note);
 	}
 
 	public JEditorPane getEditPane()

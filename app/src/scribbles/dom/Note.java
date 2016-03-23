@@ -2,7 +2,6 @@ package scribbles.dom;
 
 import javax.swing.text.*;
 import javax.swing.undo.UndoManager;
-import java.awt.*;
 
 public class Note extends DefaultStyledDocument implements StyledDocument
 {
@@ -26,8 +25,9 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 			addStyle("title", getStyle("text"));
 			addStyle("note", getStyle("text"));
 
-			getStyle("title").addAttribute( StyleConstants.Foreground, Color.red );
-			//getStyle("note").addAttribute( Styl, font.deriveFont(Font.BOLD) );
+			getStyle("title").addAttribute( StyleConstants.FontSize, 24 );
+			getStyle("title").addAttribute( StyleConstants.FontConstants.Underline, true );
+			getStyle("note").addAttribute( StyleConstants.FontConstants.Bold, true );
 
 			insertString(0, initialText, null);
 			initUndoManager();
@@ -93,8 +93,8 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 						}
 						else
 						{
-							setCharacterAttributes(x, index+1, textAttr, true);
-							x = index+2;
+							setCharacterAttributes(x, index, textAttr, true);
+							x = index+1;
 							type = TYPE_NOTE;
 						}
 					}
