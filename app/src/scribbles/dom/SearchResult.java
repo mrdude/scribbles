@@ -2,8 +2,8 @@ package scribbles.dom;
 
 public class SearchResult
 {
-	private final Note n;
-	private final int row, col;
+	public final Note n;
+	public final int row, col;
 
 	SearchResult(Note n, int row, int col)
 	{

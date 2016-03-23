@@ -4,6 +4,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.text.*;
 import javax.swing.undo.UndoManager;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Note extends DefaultStyledDocument implements StyledDocument
 {
@@ -33,11 +36,13 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 		try
 		{
 			addStyle("text", getStyle(StyleContext.DEFAULT_STYLE));
+			addStyle("searchResult", getStyle(StyleContext.DEFAULT_STYLE));
 			addStyle("title", getStyle("text"));
 			addStyle("note", getStyle("text"));
 
 			getStyle("title").addAttribute( StyleConstants.FontSize, 24 );
 			getStyle("title").addAttribute( StyleConstants.FontConstants.Underline, true );
+			getStyle("searchResult").addAttribute( StyleConstants.Background, Color.yellow );
 			getStyle("note").addAttribute( StyleConstants.FontConstants.Bold, true );
 
 			insertString(0, initialText, null);
@@ -140,6 +145,33 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 					break;
 			}
 		}
+
+		//add search highlights
+		for( SearchHighlight h : searchHighlights )
+			setCharacterAttributes(h.from, h.len+1, getStyle("searchResult"), false);
+	}
+
+	private class SearchHighlight
+	{
+		private int from, len;
+		SearchHighlight(int from, int len)
+		{
+			this.from = from;
+			this.len = len;
+		}
+	}
+
+	private final List<SearchHighlight> searchHighlights = new ArrayList<>();
+
+	void clearSearchHighlights()
+	{
+		searchHighlights.clear();
+	}
+
+	void addSearchHighlight(int from, int len)
+	{
+		searchHighlights.add( new SearchHighlight(from, len) );
+		styleText();
 	}
 
 	public boolean canUndo()

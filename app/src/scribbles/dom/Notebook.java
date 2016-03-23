@@ -106,6 +106,8 @@ public class Notebook
 		{
 			for( Note n : getNoteList() )
 			{
+				n.clearSearchHighlights();
+
 				final String docText = n.getDocumentText();
 				for( int x = docText.indexOf(searchString); x != -1 && x < docText.length() - searchString.length(); x = docText.indexOf(searchString, x + 1) )
 				{
@@ -126,6 +128,7 @@ public class Notebook
 					}
 
 					results.add( new SearchResult(n, row, col) );
+					n.addSearchHighlight(x, searchString.length());
 				}
 			}
 		}
