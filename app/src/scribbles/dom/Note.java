@@ -148,7 +148,7 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 
 		//add search highlights
 		for( SearchHighlight h : searchHighlights )
-			setCharacterAttributes(h.from, h.len+1, getStyle("searchResult"), false);
+			setCharacterAttributes(h.from, h.len, getStyle("searchResult"), false);
 	}
 
 	private class SearchHighlight
