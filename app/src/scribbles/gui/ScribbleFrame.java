@@ -100,9 +100,21 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 
 		//updateSearch text field listeners
 		final JTextField searchTextField = statusBar.getSearchTextField();
-		searchTextField.addKeyListener(new KeyAdapter() {
+		searchTextField.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e)
+			{
+				updateSearch( searchTextField.getText() );
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+				updateSearch( searchTextField.getText() );
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e)
 			{
 				updateSearch( searchTextField.getText() );
 			}

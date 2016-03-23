@@ -239,6 +239,6 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 	/** This returns the title of the note -- it is used by NoteListPanel's JTree */
 	public String toString()
 	{
-		return (isDirty() ? "*" : "") +getTitle();
+		return getTitle();
 	}
 }

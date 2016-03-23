@@ -1,13 +1,9 @@
 package scribbles.gui;
 
 import scribbles.Utils;
-import scribbles.dom.Note;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Caret;
-import java.awt.*;
-import java.awt.event.*;
 
 public class StatusBar extends JPanel implements SwingUtils
 {
@@ -75,12 +71,8 @@ public class StatusBar extends JPanel implements SwingUtils
 	void onSearch(int searchResultCount)
 	{
 		if( searchResultCount == -1 )
-		{
 			searchResultLabel.setText("");
-		}
 		else
-		{
 			searchResultLabel.setText("Found " +searchResultCount+ " result(s)");
-		}
 	}
 }
