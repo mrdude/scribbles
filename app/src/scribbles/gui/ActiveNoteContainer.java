@@ -2,6 +2,7 @@ package scribbles.gui;
 
 import org.jetbrains.annotations.Nullable;
 import scribbles.dom.Note;
+import scribbles.dom.Notebook;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,11 +15,15 @@ public class ActiveNoteContainer extends JPanel
 	private final JTextPane editPane = new JTextPane();
 	private final JScrollPane scrollPane = new JScrollPane(editPane);
 
-	public ActiveNoteContainer()
+	public ActiveNoteContainer(final Notebook notebook)
 	{
 		setLayout( new BorderLayout() );
 		add( scrollPane, BorderLayout.CENTER );
 		scrollPane.setVisible(false);
+
+		notebook.addNotebookListener(new NotebookListener.Adapter() {
+			@Override public void activeNoteChanged(Note newActiveNote) { setActiveNote(newActiveNote); }
+		});
 	}
 
 	protected void paintComponent(Graphics graphics)
@@ -38,12 +43,15 @@ public class ActiveNoteContainer extends JPanel
 		g.drawString( str, x, y );
 	}
 
-	public void setActiveNote(@Nullable Note note)
+	private void setActiveNote(@Nullable Note note)
 	{
 		scrollPane.setVisible( note != null );
 
 		if( note != null )
 			editPane.setStyledDocument(note);
+
+		revalidate();
+		repaint();
 	}
 
 	public JEditorPane getEditPane()

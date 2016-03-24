@@ -79,6 +79,26 @@ public class Notebook
 		}
 	}
 
+	private void fireFailedNotebookSaveEvent(IOException e)
+	{
+		final Object[] obj = listenerList.getListenerList();
+		for( int x = 0; x < obj.length; x += 2 )
+		{
+			final NotebookListener l = (NotebookListener)obj[x+1];
+			l.failedSave(e);
+		}
+	}
+
+	private void fireActiveNoteChangedEvent(final Note newActiveNote)
+	{
+		final Object[] obj = listenerList.getListenerList();
+		for( int x = 0; x < obj.length; x += 2 )
+		{
+			final NotebookListener l = (NotebookListener)obj[x+1];
+			l.activeNoteChanged(newActiveNote);
+		}
+	}
+
 	/**
 	 * Returns the IOException that occured during the last IO operation (if any)
 	 */
@@ -98,9 +118,10 @@ public class Notebook
 		return activeNote;
 	}
 
-	public void setActiveNote(Note n)
+	public void setActiveNote(@Nullable Note n)
 	{
 		activeNote = n;
+		fireActiveNoteChangedEvent(n);
 	}
 
 	public Note createNote()
@@ -127,15 +148,22 @@ public class Notebook
 	}
 
 	/** Saves the notebook to it's file */
-	public void save() throws IOException
+	public void save()
 	{
-		//TODO if the save fails in the middle of writing, you will be left with a half-written file. Come up with an atomic save operation.
-		NotebookWriter.save(file, noteList);
+		try
+		{
+			//TODO if the save fails in the middle of writing, you will be left with a half-written file. Come up with an atomic save operation.
+			NotebookWriter.save(file, noteList);
 
-		for( Note n : noteList )
-			n.resetDirtyFlag();
+			for( Note n : noteList )
+				n.resetDirtyFlag();
 
-		fireNotebookSavedEvent();
+			fireNotebookSavedEvent();
+		}
+		catch(IOException e)
+		{
+			fireFailedNotebookSaveEvent(e);
+		}
 	}
 
 	/** Loads the notebook from it's file */

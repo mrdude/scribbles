@@ -11,6 +11,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 
 /**
@@ -28,6 +29,9 @@ public class NoteListPanel extends JTree
 
 		setBackground( Color.white );
 		setLayout( new BoxLayout(this, BoxLayout.Y_AXIS) );
+
+		//only allow one node to be selected at once
+		getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
 
 		setCellRenderer(new DefaultTreeCellRenderer() {
 			private final Icon defaultLeafIcon = getLeafIcon();
@@ -61,28 +65,21 @@ public class NoteListPanel extends JTree
 			}
 		});
 
-		//listen for new notes
-		notebook.addNotebookListener(new NotebookListener() {
-			@Override
-			public void noteCreated(Note newNote)
-			{
-				getModel().noteCreated( newNote );
-			}
+		//listen for changes to the notebook
+		notebook.addNotebookListener(new NotebookListener.Adapter() {
+			@Override public void noteCreated(Note newNote) { getModel().noteCreated( newNote ); }
+			@Override public void notebookSaved() { getModel().valueForRootChanged(); }
+			@Override public void activeNoteChanged(Note newActiveNote) { onActiveNoteChange(newActiveNote); }
 
-			@Override
-			public void notebookSaved()
-			{
-				getModel().valueForRootChanged();
-			}
 		});
 
 		//when the user clicks on a note, set that note as the active note
 		addTreeSelectionListener( (e) -> {
-			if( e.getPath().getLastPathComponent() instanceof Note )
-			{
-				final Note n = (Note) e.getPath().getLastPathComponent();
-				win.setActiveNote(n);
-			}
+			final Object selectedNode = e.getPath().getLastPathComponent();
+			if( selectedNode == null )
+				notebook.setActiveNote(null);
+			else if( selectedNode instanceof Note )
+				notebook.setActiveNote( (Note)selectedNode );
 		});
 	}
 
@@ -105,7 +102,7 @@ public class NoteListPanel extends JTree
 	}
 
 	/** This is called by ScribbleFrame when the active note is changed */
-	void onActiveNoteChange(@NotNull Note newActiveNote)
+	private void onActiveNoteChange(@NotNull Note newActiveNote)
 	{
 		final TreePath path = new TreePath( new Object[] { getModel().rootObject, newActiveNote } );
 		setSelectionPath( path );

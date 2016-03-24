@@ -42,7 +42,7 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 				JOptionPane.showMessageDialog(this, "Encountered an IO error while reading the file");
 		}
 
-		activeNoteContainer = new ActiveNoteContainer();
+		activeNoteContainer = new ActiveNoteContainer(notebook);
 		statusBar = new StatusBar(this, activeNoteContainer.getEditPane());
 		noteList = new NoteListPanel(this);
 
@@ -51,6 +51,16 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 			@Override public void insertUpdate(DocumentEvent e) { noteModified( (Note)e.getDocument() ); }
 			@Override public void removeUpdate(DocumentEvent e) { noteModified( (Note)e.getDocument() ); }
 			@Override public void changedUpdate(DocumentEvent e) { noteModified( (Note)e.getDocument() ); }
+		});
+
+		//listen for failed notebook saves
+		notebook.addNotebookListener(new NotebookListener.Adapter() {
+			@Override
+			public void failedSave(IOException e)
+			{
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(ScribbleFrame.this, "Encountered an IO error while saving the file");
+			}
 		});
 
 		//init the GUI
@@ -121,9 +131,9 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 					.menuItem("New notebook", (e) -> newNotebookModalWindow(), KeyboardShortcuts.newNotebook, Utils.OS.all() )
 					.menuItem("Open notebook", (e) -> openNotebookModalWindow(), KeyboardShortcuts.openNotebook, Utils.OS.all() )
 					.menuItem("Save notebook As")//, (e) -> saveAsNotebookModalWindow(), KeyboardShortcuts.saveNotebookAs, Utils.OS.all() )
-					.menuItem("Save notebook", (e) -> saveNotebook(), KeyboardShortcuts.saveNotebook, Utils.OS.all() )
+					.menuItem("Save notebook", (e) -> notebook.save(), KeyboardShortcuts.saveNotebook, Utils.OS.all() )
 					.seperator()
-					.menuItem("New note", (e) -> setActiveNote( createNote() ), KeyboardShortcuts.newNote, Utils.OS.all() )
+					.menuItem("New note", (e) -> notebook.setActiveNote( notebook.createNote() ), KeyboardShortcuts.newNote, Utils.OS.all() )
 					.menuItem("Duplicate active note", duplicateRef, (e) -> duplicateActiveNote(), KeyboardShortcuts.duplicateActiveNote, Utils.OS.all() )
 					.seperator()
 					.menuItem("Close window", (e) -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)), KeyboardShortcuts.closeWindow, Utils.OS.all() ),
@@ -217,20 +227,6 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		//TODO
 	}
 
-	private void saveNotebook()
-	{
-		try
-		{
-			notebook.save();
-			//TODO add "Last Saved" to the status bar
-		}
-		catch( IOException e )
-		{
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, "Encountered an IO error while saving the file");
-		}
-	}
-
 	/** This is called when the user requests that a window be closed */
 	private void requestClose()
 	{
@@ -284,36 +280,11 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		return notebook;
 	}
 
-	Note createNote()
-	{
-		final Note n = notebook.createNote();
-		return n;
-	}
-
-	Note duplicateNote(Note n)
-	{
-		final Note copy = notebook.duplicateNote(n);
-		return copy;
-	}
-
 	private void duplicateActiveNote()
 	{
 		final Note n = notebook.getActiveNote();
 		if( n != null )
-			setActiveNote( duplicateNote(n) );
-	}
-
-	void setActiveNote(Note n)
-	{
-		notebook.setActiveNote(n);
-		activeNoteContainer.setActiveNote(n);
-		noteList.onActiveNoteChange(n);
-
-		duplicateMenuItem.setEnabled(true);
-
-		activeNoteContainer.repaint();
-		activeNoteContainer.revalidate();
-		noteList.repaint();
+			notebook.setActiveNote( notebook.duplicateNote(n) );
 	}
 
 	private void undo()
