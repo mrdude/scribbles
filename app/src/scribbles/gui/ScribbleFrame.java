@@ -158,7 +158,7 @@ public class ScribbleFrame extends JFrame implements JComponentHelpers, Scribble
 					.nestedMenu("Windows", windowRef, Utils.OS.all() )
 						.endNestedMenu(),
 				new JMenuBuilder("Help")
-					.menuItem("About Scribbles", (e) -> AboutDialog.show((JComponent)ScribbleFrame.this.getContentPane()), Utils.OS.allExcept(Utils.OS.MAC) )
+					.menuItem("About Scribbles", (e) -> AboutDialog.show(), Utils.OS.allExcept(Utils.OS.MAC) )
 		);
 
 		undoMenuItem = undoRef.get();

@@ -4,8 +4,10 @@ import javax.swing.*;
 
 public class AboutDialog
 {
-	public static void show(JComponent parent)
+	private static final String aboutText = "Scribbles is a note-taking program";
+
+	public static void show()
 	{
-		JOptionPane.showMessageDialog(parent, "Scribbles is a note-taking program", "About Scribbles", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Scribbles is a note-taking program written in Java", "About Scribbles", JOptionPane.INFORMATION_MESSAGE);
 	}
 }

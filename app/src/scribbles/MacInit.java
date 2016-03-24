@@ -14,7 +14,7 @@ class MacInit
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Scribbles"); //set the application title on Mac OSX
 		System.setProperty("apple.laf.useScreenMenuBar", "true"); //use the menu on Mac OSX
 
-		Application.getApplication().setAboutHandler( (aboutEvent) -> AboutDialog.show(null) );
+		Application.getApplication().setAboutHandler( (aboutEvent) -> AboutDialog.show() );
 		Application.getApplication().setPreferencesHandler( (preferencesEvent) -> PreferencesDialog.show() );
 		Application.getApplication().setQuitHandler( (AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) -> {
 			//don't quit the application, but send a quit message to all open windows
