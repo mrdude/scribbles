@@ -46,7 +46,7 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		statusBar = new StatusBar(this, activeNoteContainer.getEditPane());
 		noteList = new NoteListPanel(this);
 
-		//Add a document listener to all notes in the list so that we can update the NoteList when titles of notes change
+		//Add a document listener to all notes in the list so that we can update the Undo/Redo menu items when notes are modified
 		notebook.getDocumentEventMulticaster().addDocumentListener(new DocumentListener() {
 			@Override public void insertUpdate(DocumentEvent e) { noteModified( (Note)e.getDocument() ); }
 			@Override public void removeUpdate(DocumentEvent e) { noteModified( (Note)e.getDocument() ); }
@@ -98,32 +98,13 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		//updateSearch text field listeners
 		final JTextField searchTextField = statusBar.getSearchTextField();
 		searchTextField.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e)
-			{
-				updateSearch( searchTextField.getText() );
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e)
-			{
-				updateSearch( searchTextField.getText() );
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e)
-			{
-				updateSearch( searchTextField.getText() );
-			}
+			@Override public void keyTyped(KeyEvent e) { updateSearch( searchTextField.getText() ); }
+			@Override public void keyPressed(KeyEvent e) { updateSearch( searchTextField.getText() ); }
+			@Override public void keyReleased(KeyEvent e) { updateSearch( searchTextField.getText() ); }
 		});
 
-		searchTextField.addFocusListener(new FocusAdapter()
-		{
-			@Override
-			public void focusGained(FocusEvent e)
-			{
-				updateSearch( searchTextField.getText() );
-			}
+		searchTextField.addFocusListener(new FocusAdapter() {
+			@Override public void focusGained(FocusEvent e) { updateSearch( searchTextField.getText() ); }
 		});
 	}
 
@@ -241,7 +222,6 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		try
 		{
 			notebook.save();
-			noteList.onNotebookSaved();
 			//TODO add "Last Saved" to the status bar
 		}
 		catch( IOException e )
@@ -307,24 +287,12 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 	Note createNote()
 	{
 		final Note n = notebook.createNote();
-
-		noteList.onNewNote(n);
-
-		noteList.revalidate();
-		noteList.repaint();
-
 		return n;
 	}
 
 	Note duplicateNote(Note n)
 	{
 		final Note copy = notebook.duplicateNote(n);
-
-		noteList.onNewNote(copy);
-
-		noteList.revalidate();
-		noteList.repaint();
-
 		return copy;
 	}
 

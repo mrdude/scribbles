@@ -2,7 +2,9 @@ package scribbles.dom;
 
 import org.jetbrains.annotations.Nullable;
 import scribbles.DocumentEventMulticaster;
+import scribbles.gui.NotebookListener;
 
+import javax.swing.event.EventListenerList;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ public class Notebook
 	private final List<Note> noteList = new ArrayList<>();
 	private Note activeNote = null;
 	private final DocumentEventMulticaster eventMulticaster = new DocumentEventMulticaster();
+	private final EventListenerList listenerList = new EventListenerList();
 
 	private IOException ioException = null;
 
@@ -46,6 +49,36 @@ public class Notebook
 		return eventMulticaster;
 	}
 
+	public void addNotebookListener(NotebookListener l)
+	{
+		listenerList.add( NotebookListener.class, l );
+	}
+
+	public void removeNotebookListener(NotebookListener l)
+	{
+		listenerList.remove( NotebookListener.class, l );
+	}
+
+	private void fireNewNoteEvent(Note newNote)
+	{
+		final Object[] obj = listenerList.getListenerList();
+		for( int x = 0; x < obj.length; x += 2 )
+		{
+			final NotebookListener l = (NotebookListener)obj[x+1];
+			l.noteCreated(newNote);
+		}
+	}
+
+	private void fireNotebookSavedEvent()
+	{
+		final Object[] obj = listenerList.getListenerList();
+		for( int x = 0; x < obj.length; x += 2 )
+		{
+			final NotebookListener l = (NotebookListener)obj[x+1];
+			l.notebookSaved();
+		}
+	}
+
 	/**
 	 * Returns the IOException that occured during the last IO operation (if any)
 	 */
@@ -75,14 +108,16 @@ public class Notebook
 		Note n = new Note();
 		n.addDocumentListener( eventMulticaster.getSourceListener() );
 		noteList.add( n );
+		fireNewNoteEvent( n );
 		return n;
 	}
 
 	public Note duplicateNote(Note n)
 	{
 		Note copy = new Note(n);
-		n.addDocumentListener( eventMulticaster.getSourceListener() );
+		copy.addDocumentListener( eventMulticaster.getSourceListener() );
 		noteList.add( noteList.indexOf(n)+1, copy );
+		fireNewNoteEvent( copy );
 		return copy;
 	}
 
@@ -99,6 +134,8 @@ public class Notebook
 
 		for( Note n : noteList )
 			n.resetDirtyFlag();
+
+		fireNotebookSavedEvent();
 	}
 
 	/** Loads the notebook from it's file */

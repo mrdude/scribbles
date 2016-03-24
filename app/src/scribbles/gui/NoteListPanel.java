@@ -49,11 +49,31 @@ public class NoteListPanel extends JTree
 			}
 		});
 
-		//listen for changes to notes so that we can update note titles
+		//Add a document listener to all notes in the list so that we can update the NoteList when titles of notes change
 		notebook.getDocumentEventMulticaster().addDocumentListener(new DocumentListener() {
-			@Override public void insertUpdate(DocumentEvent e) { onNoteModified( (Note)e.getDocument() ); }
-			@Override public void removeUpdate(DocumentEvent e) { onNoteModified( (Note)e.getDocument() ); }
-			@Override public void changedUpdate(DocumentEvent e) { onNoteModified( (Note)e.getDocument() ); }
+			@Override public void insertUpdate(DocumentEvent e) { handle( (Note)e.getDocument() ); }
+			@Override public void removeUpdate(DocumentEvent e) { handle( (Note)e.getDocument() ); }
+			@Override public void changedUpdate(DocumentEvent e) { handle( (Note)e.getDocument() ); }
+
+			private void handle(Note n)
+			{
+				getModel().valueForPathChanged(null, n);
+			}
+		});
+
+		//listen for new notes
+		notebook.addNotebookListener(new NotebookListener() {
+			@Override
+			public void noteCreated(Note newNote)
+			{
+				getModel().noteCreated( newNote );
+			}
+
+			@Override
+			public void notebookSaved()
+			{
+				getModel().valueForRootChanged();
+			}
 		});
 
 		//when the user clicks on a note, set that note as the active note
@@ -82,24 +102,6 @@ public class NoteListPanel extends JTree
 			g.fillRect( 0, 0, getWidth(), getHeight() );
 			g.dispose();
 		}
-	}
-
-	/** This is called by ScribbleFrame when a new note is created */
-	void onNewNote(final Note n)
-	{
-		getModel().noteCreated(n);
-	}
-
-	/** This is called when a note is modified */
-	private void onNoteModified(final Note n)
-	{
-		getModel().valueForPathChanged(null, n);
-	}
-
-	/** This is called by ScribbleFrame when the notebook is saved */
-	void onNotebookSaved()
-	{
-		getModel().valueForRootChanged();
 	}
 
 	/** This is called by ScribbleFrame when the active note is changed */
