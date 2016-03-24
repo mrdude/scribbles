@@ -269,15 +269,14 @@ public class ScribbleFrame extends JFrame implements JComponentHelpers, Scribble
 
 	private void updateSearch(String searchString)
 	{
+		int searchResultCount = notebook.updateSearch(searchString);
+		if( searchResultCount > 0 )
+			activeNoteContainer.repaint();
+
 		if( searchString.isEmpty() )
-		{
 			statusBar.onSearch(-1);
-		}
 		else
-		{
-			int searchResultCount = notebook.updateSearch(searchString);
 			statusBar.onSearch( searchResultCount );
-		}
 	}
 
 	Notebook getNotebook()

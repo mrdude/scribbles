@@ -134,23 +134,26 @@ public class Notebook
 	 */
 	public int updateSearch(String searchString)
 	{
-		//clear all search results
 		int resultCount = 0;
 
-		for( Note n : getNoteList() )
-			n.clearSearchHighlights();
-
 		//do the search
-		if( !searchString.isEmpty() )
+		if( searchString.isEmpty() )
+		{
+			for( Note n : getNoteList() )
+				n.clearSearchHighlights();
+		}
+		else
 		{
 			for( Note n : getNoteList() )
 			{
+				final List<SearchResult> resultsForNote = new ArrayList<>();
+
 				final String docText = n.getDocumentText();
-				for( int x = docText.indexOf(searchString); x != -1 && x < docText.length() - searchString.length(); x = docText.indexOf(searchString, x + 1) )
-				{
-					n.addSearchHighlight( new SearchResult(n, x, searchString.length()) );
-					resultCount++;
-				}
+				for( int x = docText.indexOf(searchString); x != -1 && x < docText.length(); x = docText.indexOf(searchString, x + 1) )
+					resultsForNote.add( new SearchResult(n, x, searchString.length()) );
+
+				resultCount += resultsForNote.size();
+				n.setSearchHighlights(resultsForNote);
 			}
 		}
 

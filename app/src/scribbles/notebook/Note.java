@@ -156,11 +156,13 @@ public class Note extends DefaultStyledDocument implements StyledDocument
 	void clearSearchHighlights()
 	{
 		searchHighlights.clear();
+		styleText();
 	}
 
-	void addSearchHighlight(SearchResult res)
+	void setSearchHighlights(List<SearchResult> res)
 	{
-		searchHighlights.add( res );
+		searchHighlights.clear();
+		searchHighlights.addAll( res );
 		styleText();
 	}
 
