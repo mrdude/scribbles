@@ -1,14 +1,13 @@
 package scribbles;
 
 import com.apple.eawt.*;
-import scribbles.dom.Notebook;
 import scribbles.gui.AboutDialog;
 import scribbles.gui.PreferencesDialog;
 import scribbles.gui.ScribbleApplication;
 import scribbles.gui.ScribbleFrame;
+import scribbles.notebook.Notebook;
 
 import javax.swing.*;
-import java.util.prefs.Preferences;
 
 public class Scribbles
 {

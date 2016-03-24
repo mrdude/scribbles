@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class KeyboardShortcuts
 {
@@ -111,13 +112,8 @@ public class KeyboardShortcuts
 	//
 	private final String name, desc;
 	private KeyStroke keystroke;
-	private final List<Runnable> changeListenerList = new ArrayList<>();
+	private final CopyOnWriteArrayList<Runnable> changeListenerList = new CopyOnWriteArrayList<>();
 	private final boolean changeable;
-
-	private KeyboardShortcuts(KeyStroke keystroke)
-	{
-		this("Not yet", "Not Yet", keystroke, true);
-	}
 
 	private KeyboardShortcuts(String name, String desc, KeyStroke keystroke)
 	{
@@ -179,30 +175,17 @@ public class KeyboardShortcuts
 
 	public void addChangeListener(Runnable changeListener)
 	{
-		synchronized( changeListenerList )
-		{
-			changeListenerList.add( changeListener );
-		}
+		changeListenerList.add( changeListener );
 	}
 
 	public void removeChangeListener(Runnable changeListener)
 	{
-		synchronized( changeListenerList )
-		{
-			changeListenerList.remove( changeListener );
-		}
+		changeListenerList.remove( changeListener );
 	}
 
 	private void fireChangeEvent()
 	{
-		final List<Runnable> listenerArray;
-
-		synchronized( changeListenerList )
-		{
-			listenerArray = new ArrayList<>( changeListenerList );
-		}
-
-		for( Runnable p : listenerArray )
+		for( Runnable p : changeListenerList )
 			p.run();
 	}
 }

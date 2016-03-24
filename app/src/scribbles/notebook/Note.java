@@ -1,4 +1,4 @@
-package scribbles.dom;
+package scribbles.notebook;
 
 import org.jetbrains.annotations.Nullable;
 

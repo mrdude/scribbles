@@ -1,9 +1,9 @@
-package scribbles.gui;
+package scribbles.swing_extensions;
 
 import javax.swing.*;
 import java.awt.*;
 
-class JPlaceholderTextField extends JTextField
+public class JPlaceholderTextField extends JTextField
 {
 	private Font font, blankFont;
 	private String placeholderText;

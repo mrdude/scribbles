@@ -1,8 +1,8 @@
-package scribbles.dom;
+package scribbles.notebook;
 
 import org.jetbrains.annotations.Nullable;
-import scribbles.DocumentEventMulticaster;
 import scribbles.listeners.NotebookListener;
+import scribbles.swing_extensions.DocumentEventMulticaster;
 
 import java.io.File;
 import java.io.IOException;

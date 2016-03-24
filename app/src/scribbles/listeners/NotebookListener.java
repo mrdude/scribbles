@@ -1,6 +1,6 @@
 package scribbles.listeners;
 
-import scribbles.dom.Note;
+import scribbles.notebook.Note;
 
 import java.io.IOException;
 

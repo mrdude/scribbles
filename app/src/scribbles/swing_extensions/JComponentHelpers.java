@@ -1,10 +1,8 @@
-package scribbles.gui;
+package scribbles.swing_extensions;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowEvent;
 
-interface SwingUtils
+public interface JComponentHelpers
 {
 	void setPreferredSize(Dimension dim);
 

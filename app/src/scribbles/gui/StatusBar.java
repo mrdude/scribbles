@@ -1,11 +1,13 @@
 package scribbles.gui;
 
 import scribbles.Utils;
+import scribbles.swing_extensions.JComponentHelpers;
+import scribbles.swing_extensions.JPlaceholderTextField;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 
-public class StatusBar extends JPanel implements SwingUtils
+public class StatusBar extends JPanel implements JComponentHelpers
 {
 	private final ScribbleFrame win;
 	private final JLabel searchResultLabel = new JLabel();

@@ -1,4 +1,4 @@
-package scribbles.dom;
+package scribbles.notebook;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.MalformedJsonException;

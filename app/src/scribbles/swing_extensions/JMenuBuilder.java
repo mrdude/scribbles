@@ -1,15 +1,16 @@
-package scribbles.gui;
+package scribbles.swing_extensions;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import scribbles.Utils;
+import scribbles.gui.KeyboardShortcuts;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-class JMenuBuilder
+public class JMenuBuilder
 {
 	private final @Nullable JMenuBuilder parent;
 	private final @Nullable AbstractButton menu;

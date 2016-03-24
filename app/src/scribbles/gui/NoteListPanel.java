@@ -1,9 +1,10 @@
 package scribbles.gui;
 
 import org.jetbrains.annotations.NotNull;
-import scribbles.dom.Note;
-import scribbles.dom.Notebook;
 import scribbles.listeners.NotebookListener;
+import scribbles.notebook.Note;
+import scribbles.notebook.Notebook;
+import scribbles.swing_extensions.AbstractTreeModel;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

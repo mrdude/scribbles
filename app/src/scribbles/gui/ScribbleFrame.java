@@ -1,11 +1,13 @@
 package scribbles.gui;
 
 import scribbles.Utils;
-import scribbles.dom.InvalidNotebookFormatException;
-import scribbles.dom.Note;
-import scribbles.dom.Notebook;
 import scribbles.listeners.NotebookListener;
 import scribbles.listeners.ScribbleWindowListener;
+import scribbles.notebook.InvalidNotebookFormatException;
+import scribbles.notebook.Note;
+import scribbles.notebook.Notebook;
+import scribbles.swing_extensions.JComponentHelpers;
+import scribbles.swing_extensions.JMenuBuilder;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -18,7 +20,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** A top level window. One window corresponds to one notebook. */
-public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowListener
+public class ScribbleFrame extends JFrame implements JComponentHelpers, ScribbleWindowListener
 {
 	private final Notebook notebook;
 

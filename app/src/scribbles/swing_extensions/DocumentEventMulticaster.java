@@ -1,4 +1,4 @@
-package scribbles;
+package scribbles.swing_extensions;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

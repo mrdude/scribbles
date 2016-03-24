@@ -1,14 +1,13 @@
 package scribbles.gui;
 
-import org.jetbrains.annotations.Nullable;
 import scribbles.Utils;
+import scribbles.swing_extensions.AbstractTreeModel;
+import scribbles.swing_extensions.KeystrokeTextfield;
 
 import javax.swing.*;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 
 public class PreferencesDialog
@@ -93,44 +92,6 @@ public class PreferencesDialog
 
 		prefs.pack();
 		prefs.setVisible(true);
-	}
-
-	private static class KeystrokeTextfield extends JPlaceholderTextField
-	{
-		private @Nullable KeyStroke keystroke;
-
-		public KeystrokeTextfield()
-		{
-			setEditable( false );
-			setPlaceholderText("Set your shortcut here");
-
-			addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e)
-				{
-					if( e.getKeyCode() == KeyEvent.VK_ESCAPE )
-						keystroke(null);
-					else if( e.getKeyCode() != KeyEvent.VK_UNDEFINED )
-						keystroke( KeyStroke.getKeyStroke(e.getKeyCode(), e.getModifiers()) );
-				}
-			} );
-
-			setHorizontalAlignment( SwingConstants.CENTER );
-		}
-
-		public void keystroke(@Nullable KeyStroke ks)
-		{
-			this.keystroke = ks;
-			if( keystroke == null )
-				setText("");
-			else
-				setText(Utils.keyStrokeToString(keystroke));
-		}
-
-		public @Nullable KeyStroke keystroke()
-		{
-			return keystroke;
-		}
 	}
 
 	private static class KeyboardShortcutTreeModel extends AbstractTreeModel implements TreeModel
