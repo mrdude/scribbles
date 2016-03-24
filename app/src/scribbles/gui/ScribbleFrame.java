@@ -262,8 +262,6 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 	/** This is called when a note is modified */
 	private void noteModified(Note n)
 	{
-		noteList.onNoteModified(n);
-
 		//update redo/undo menu items
 		if( n.canUndo() )
 		{
@@ -286,8 +284,6 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 			redoMenuItem.setEnabled( false );
 			redoMenuItem.setText("Redo");
 		}
-
-		ScribbleFrame.this.repaint();
 	}
 
 	private void updateSearch(String searchString)

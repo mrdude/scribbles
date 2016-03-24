@@ -5,6 +5,8 @@ import scribbles.dom.Note;
 import scribbles.dom.Notebook;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
@@ -48,6 +50,13 @@ public class NoteListPanel extends JTree
 			}
 		});
 
+		//listen for changes to notes so that we can update note titles
+		notebook.getDocumentEventMulticaster().addDocumentListener(new DocumentListener() {
+			@Override public void insertUpdate(DocumentEvent e) { onNoteModified( (Note)e.getDocument() ); }
+			@Override public void removeUpdate(DocumentEvent e) { onNoteModified( (Note)e.getDocument() ); }
+			@Override public void changedUpdate(DocumentEvent e) { onNoteModified( (Note)e.getDocument() ); }
+		});
+
 		//when the user clicks on a note, set that note as the active note
 		addTreeSelectionListener( (e) -> {
 			if( e.getPath().getLastPathComponent() instanceof Note )
@@ -82,8 +91,8 @@ public class NoteListPanel extends JTree
 		getModel().noteCreated(n);
 	}
 
-	/** This is called by Swing when a note is modified */
-	void onNoteModified(final Note n)
+	/** This is called when a note is modified */
+	private void onNoteModified(final Note n)
 	{
 		getModel().valueForPathChanged(null, n);
 	}
