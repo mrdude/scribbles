@@ -20,6 +20,12 @@ public class Notebook
 	private final CopyOnWriteArrayList<NotebookListener> listenerList = new CopyOnWriteArrayList<>();
 
 	private IOException ioException = null;
+	private boolean swapFile = false;
+
+	static File getTempFile(File file)
+	{
+		return new File( file.getAbsolutePath()+ ".swp" );
+	}
 
 	public Notebook(File file)
 	{
@@ -55,6 +61,11 @@ public class Notebook
 	public IOException getIOException()
 	{
 		return ioException;
+	}
+
+	public boolean readFromSwap()
+	{
+		return swapFile;
 	}
 
 	/** Returns the file that this notebook represents */
@@ -102,7 +113,6 @@ public class Notebook
 	{
 		try
 		{
-			//TODO if the save fails in the middle of writing, you will be left with a half-written file. Come up with an atomic save operation.
 			NotebookWriter.save(file, noteList);
 
 			for( Note n : noteList )
@@ -126,6 +136,8 @@ public class Notebook
 			n.addDocumentListener( eventMulticaster.getSourceListener() );
 			noteList.add( n );
 		}
+
+		swapFile = r.isSwapFile;
 	}
 
 	/**

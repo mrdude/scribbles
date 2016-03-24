@@ -36,6 +36,9 @@ public class ScribbleFrame extends JFrame implements JComponentHelpers, Scribble
 		ScribbleApplication.registerScribbleFrame(this);
 
 		notebook = new Notebook(notebookFile);
+		if( notebook.readFromSwap() )
+			JOptionPane.showMessageDialog(this, "This notebook is corrupted; Scribble has restored your backup instead.");
+
 		if( notebook.getIOException() != null ) //TODO storing the exception instead of saving it looks like a code smell -- is there a better way to do this?
 		{
 			notebook.getIOException().printStackTrace();

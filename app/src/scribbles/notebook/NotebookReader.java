@@ -5,6 +5,8 @@ import com.google.gson.stream.MalformedJsonException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,24 +14,47 @@ class NotebookReader
 {
 	public static NotebookReader load(File file) throws IOException, InvalidNotebookFormatException
 	{
+		try
+		{
+			return read(file, false);
+		}
+		catch(IOException e)
+		{
+			//attempt to read the .swp file
+			NotebookReader r = read( Notebook.getTempFile(file), true );
+
+			//if reading from the swap file works, replace the file with the .swp
+			try
+			{
+				file.delete();
+				Files.move(Notebook.getTempFile(file).toPath(), file.toPath(), StandardCopyOption.ATOMIC_MOVE);
+			}
+			catch(IOException e2) {} //we really don't care if this exception gets thrown
+
+			return r;
+		}
+	}
+
+	private static NotebookReader read(File file, boolean isSwapFile) throws IOException, MalformedJsonException
+	{
 		try( FileInputStream fis = new FileInputStream(file);
 		     BufferedInputStream bis = new BufferedInputStream(fis);
 		     InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
 		     JsonReader reader = new JsonReader(isr) )
 		{
-			final NotebookReader r = new NotebookReader();
+			final NotebookReader r = new NotebookReader(isSwapFile);
 			r.readNotebookFile(reader);
 			return r;
-		}
-		catch(MalformedJsonException malformed)
-		{
-			throw new InvalidNotebookFormatException(malformed);
 		}
 	}
 
 	public final List<String> noteList = new ArrayList<>();
+	public final boolean isSwapFile;
 
-	private NotebookReader() {}
+	private NotebookReader(boolean isSwapFile)
+	{
+		this.isSwapFile = isSwapFile;
+	}
 
 	private void readNotebookFile(JsonReader reader) throws IOException, MalformedJsonException
 	{
