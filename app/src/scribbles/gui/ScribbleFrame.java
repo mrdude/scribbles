@@ -4,6 +4,8 @@ import scribbles.Utils;
 import scribbles.dom.InvalidNotebookFormatException;
 import scribbles.dom.Note;
 import scribbles.dom.Notebook;
+import scribbles.listeners.NotebookListener;
+import scribbles.listeners.ScribbleWindowListener;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

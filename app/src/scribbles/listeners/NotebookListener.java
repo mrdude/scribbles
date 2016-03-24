@@ -1,14 +1,18 @@
-package scribbles.gui;
+package scribbles.listeners;
 
 import scribbles.dom.Note;
 
 import java.io.IOException;
-import java.util.EventListener;
 
-public interface NotebookListener extends EventListener
+public interface NotebookListener
 {
+	/** This is called after a note is created */
 	void noteCreated(final Note newNote);
+
+	/** This is called after the notebook is successfully saved */
 	void notebookSaved();
+
+	/** This is called when the active note is set */
 	void activeNoteChanged(final Note newActiveNote);
 
 	/** This is called when a save fails */

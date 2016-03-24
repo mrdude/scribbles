@@ -1,6 +1,8 @@
-package scribbles.gui;
+package scribbles.listeners;
 
-interface ScribbleWindowListener
+import scribbles.gui.ScribbleFrame;
+
+public interface ScribbleWindowListener
 {
 	void windowCreated(ScribbleFrame win);
 	void windowFocused(ScribbleFrame win, int windowIndex);

@@ -1,17 +1,19 @@
 package scribbles.gui;
 
 import org.jetbrains.annotations.Nullable;
+import scribbles.listeners.ScribbleWindowListener;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /** Keeps track of all application windows */
 public class ScribbleApplication
 {
 	private static final List<ScribbleFrame> openWindows = new ArrayList<>();
-	private static final List<ScribbleWindowListener> listeners = new ArrayList<>();
+	private static final CopyOnWriteArrayList<ScribbleWindowListener> listeners = new CopyOnWriteArrayList<>();
 
 	static void registerScribbleFrame(ScribbleFrame win)
 	{
@@ -59,18 +61,12 @@ public class ScribbleApplication
 
 	static void addScribbleWindowListener(ScribbleWindowListener listener)
 	{
-		synchronized( listeners )
-		{
-			listeners.add( listener );
-		}
+		listeners.add( listener );
 	}
 
 	static void removeScribbleWindowListener(ScribbleWindowListener listener)
 	{
-		synchronized( listeners )
-		{
-			listeners.remove( listener );
-		}
+		listeners.remove( listener );
 	}
 
 	/** Returns the number of open windows */
@@ -108,28 +104,19 @@ public class ScribbleApplication
 	//listener helper functions
 	private static void fireWindowCreatedEvent(ScribbleFrame win)
 	{
-		for( ScribbleWindowListener l : getListenerArray() )
+		for( ScribbleWindowListener l : listeners )
 			l.windowCreated(win);
 	}
 
 	private static void fireWindowFocusedEvent(ScribbleFrame win, int windowIndex)
 	{
-		for( ScribbleWindowListener l : getListenerArray() )
+		for( ScribbleWindowListener l : listeners )
 			l.windowFocused(win, windowIndex);
 	}
 
 	private static void fireWindowDestroyedEvent(ScribbleFrame win, int windowIndex)
 	{
-		for( ScribbleWindowListener l : getListenerArray() )
+		for( ScribbleWindowListener l : listeners )
 			l.windowDestroyed(win, windowIndex);
-	}
-
-	private static ScribbleWindowListener[] getListenerArray()
-	{
-		synchronized( listeners )
-		{
-			final int sz = listeners.size();
-			return listeners.toArray(new ScribbleWindowListener[sz]);
-		}
 	}
 }

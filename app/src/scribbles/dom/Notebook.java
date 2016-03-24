@@ -2,13 +2,13 @@ package scribbles.dom;
 
 import org.jetbrains.annotations.Nullable;
 import scribbles.DocumentEventMulticaster;
-import scribbles.gui.NotebookListener;
+import scribbles.listeners.NotebookListener;
 
-import javax.swing.event.EventListenerList;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Notebook
 {
@@ -17,7 +17,7 @@ public class Notebook
 	private final List<Note> noteList = new ArrayList<>();
 	private Note activeNote = null;
 	private final DocumentEventMulticaster eventMulticaster = new DocumentEventMulticaster();
-	private final EventListenerList listenerList = new EventListenerList();
+	private final CopyOnWriteArrayList<NotebookListener> listenerList = new CopyOnWriteArrayList<>();
 
 	private IOException ioException = null;
 
@@ -49,58 +49,8 @@ public class Notebook
 		return eventMulticaster;
 	}
 
-	public void addNotebookListener(NotebookListener l)
-	{
-		listenerList.add( NotebookListener.class, l );
-	}
-
-	public void removeNotebookListener(NotebookListener l)
-	{
-		listenerList.remove( NotebookListener.class, l );
-	}
-
-	private void fireNewNoteEvent(Note newNote)
-	{
-		final Object[] obj = listenerList.getListenerList();
-		for( int x = 0; x < obj.length; x += 2 )
-		{
-			final NotebookListener l = (NotebookListener)obj[x+1];
-			l.noteCreated(newNote);
-		}
-	}
-
-	private void fireNotebookSavedEvent()
-	{
-		final Object[] obj = listenerList.getListenerList();
-		for( int x = 0; x < obj.length; x += 2 )
-		{
-			final NotebookListener l = (NotebookListener)obj[x+1];
-			l.notebookSaved();
-		}
-	}
-
-	private void fireFailedNotebookSaveEvent(IOException e)
-	{
-		final Object[] obj = listenerList.getListenerList();
-		for( int x = 0; x < obj.length; x += 2 )
-		{
-			final NotebookListener l = (NotebookListener)obj[x+1];
-			l.failedSave(e);
-		}
-	}
-
-	private void fireActiveNoteChangedEvent(final Note newActiveNote)
-	{
-		final Object[] obj = listenerList.getListenerList();
-		for( int x = 0; x < obj.length; x += 2 )
-		{
-			final NotebookListener l = (NotebookListener)obj[x+1];
-			l.activeNoteChanged(newActiveNote);
-		}
-	}
-
 	/**
-	 * Returns the IOException that occured during the last IO operation (if any)
+	 * Returns the IOException that occurred during the last load operation (if any)
 	 */
 	public IOException getIOException()
 	{
@@ -198,29 +148,47 @@ public class Notebook
 				final String docText = n.getDocumentText();
 				for( int x = docText.indexOf(searchString); x != -1 && x < docText.length() - searchString.length(); x = docText.indexOf(searchString, x + 1) )
 				{
-					int row = 0;
-					int col = 0;
-
-					for( int y = 0; y < x; y++ )
-					{
-						switch( docText.charAt(y) )
-						{
-							case '\n':
-								row++;
-								col = 0;
-							default:
-								col++;
-								break;
-						}
-					}
-
-					final SearchResult res = new SearchResult(n, x, searchString.length(), row, col);
-					n.addSearchHighlight(res);
+					n.addSearchHighlight( new SearchResult(n, x, searchString.length()) );
 					resultCount++;
 				}
 			}
 		}
 
 		return resultCount;
+	}
+
+	//notebook listener methods
+	public void addNotebookListener(NotebookListener l)
+	{
+		listenerList.add( l );
+	}
+
+	public void removeNotebookListener(NotebookListener l)
+	{
+		listenerList.remove( l );
+	}
+
+	private void fireNewNoteEvent(Note newNote)
+	{
+		for( NotebookListener l : listenerList )
+			l.noteCreated(newNote);
+	}
+
+	private void fireNotebookSavedEvent()
+	{
+		for( NotebookListener l : listenerList )
+			l.notebookSaved();
+	}
+
+	private void fireFailedNotebookSaveEvent(IOException e)
+	{
+		for( NotebookListener l : listenerList )
+			l.failedSave(e);
+	}
+
+	private void fireActiveNoteChangedEvent(final Note newActiveNote)
+	{
+		for( NotebookListener l : listenerList )
+			l.activeNoteChanged(newActiveNote);
 	}
 }

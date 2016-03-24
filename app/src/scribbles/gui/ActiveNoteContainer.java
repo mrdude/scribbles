@@ -3,6 +3,7 @@ package scribbles.gui;
 import org.jetbrains.annotations.Nullable;
 import scribbles.dom.Note;
 import scribbles.dom.Notebook;
+import scribbles.listeners.NotebookListener;
 
 import javax.swing.*;
 import java.awt.*;
