@@ -1,6 +1,7 @@
 package scribbles.dom;
 
 import org.jetbrains.annotations.Nullable;
+import scribbles.DocumentEventMulticaster;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ public class Notebook
 	private final File file; //the file that this notebook is saved to
 	private final List<Note> noteList = new ArrayList<>();
 	private Note activeNote = null;
+	private final DocumentEventMulticaster eventMulticaster = new DocumentEventMulticaster();
 
 	private IOException ioException = null;
 
@@ -33,6 +35,15 @@ public class Notebook
 				ioException = e;
 			}
 		}
+	}
+
+	/**
+	 * Returns the event multicaster for this notebook.
+	 * Listeners attached to this multicaster are notified when changes happen to any note in the notebook.
+	 */
+	public DocumentEventMulticaster getDocumentEventMulticaster()
+	{
+		return eventMulticaster;
 	}
 
 	/**
@@ -62,6 +73,7 @@ public class Notebook
 	public Note createNote()
 	{
 		Note n = new Note();
+		n.addDocumentListener( eventMulticaster.getSourceListener() );
 		noteList.add( n );
 		return n;
 	}
@@ -69,6 +81,7 @@ public class Notebook
 	public Note duplicateNote(Note n)
 	{
 		Note copy = new Note(n);
+		n.addDocumentListener( eventMulticaster.getSourceListener() );
 		noteList.add( noteList.indexOf(n)+1, copy );
 		return copy;
 	}
@@ -93,7 +106,11 @@ public class Notebook
 	{
 		final NotebookReader r = NotebookReader.load(file);
 		for( String str : r.noteList )
-			noteList.add( new Note(str, false) );
+		{
+			final Note n = new Note(str, false);
+			n.addDocumentListener( eventMulticaster.getSourceListener() );
+			noteList.add( n );
+		}
 	}
 
 	/**

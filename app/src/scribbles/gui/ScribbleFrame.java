@@ -47,14 +47,11 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 		noteList = new NoteListPanel(this);
 
 		//Add a document listener to all notes in the list so that we can update the NoteList when titles of notes change
-		for( Note n : notebook.getNoteList() )
-		{
-			n.addDocumentListener(new DocumentListener() {
-				@Override public void insertUpdate(DocumentEvent e) { noteModified(n); }
-				@Override public void removeUpdate(DocumentEvent e) { noteModified(n); }
-				@Override public void changedUpdate(DocumentEvent e) { noteModified(n); }
-			});
-		}
+		notebook.getDocumentEventMulticaster().addDocumentListener(new DocumentListener() {
+			@Override public void insertUpdate(DocumentEvent e) { noteModified( (Note)e.getDocument() ); }
+			@Override public void removeUpdate(DocumentEvent e) { noteModified( (Note)e.getDocument() ); }
+			@Override public void changedUpdate(DocumentEvent e) { noteModified( (Note)e.getDocument() ); }
+		});
 
 		//init the GUI
 		setLayout( new BorderLayout() );
@@ -315,13 +312,6 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 	{
 		final Note n = notebook.createNote();
 
-		//Add a document listener so that we can update the NoteList when titles of notes change
-		n.addDocumentListener(new DocumentListener() {
-			@Override public void insertUpdate(DocumentEvent e) { noteModified(n); }
-			@Override public void removeUpdate(DocumentEvent e) { noteModified(n); }
-			@Override public void changedUpdate(DocumentEvent e) { noteModified(n); }
-		});
-
 		noteList.onNewNote(n);
 
 		noteList.revalidate();
@@ -333,13 +323,6 @@ public class ScribbleFrame extends JFrame implements SwingUtils, ScribbleWindowL
 	Note duplicateNote(Note n)
 	{
 		final Note copy = notebook.duplicateNote(n);
-
-		//Add a document listener so that we can update the NoteList when titles of notes change
-		copy.addDocumentListener(new DocumentListener() {
-			@Override public void insertUpdate(DocumentEvent e) { noteModified(copy); }
-			@Override public void removeUpdate(DocumentEvent e) { noteModified(copy); }
-			@Override public void changedUpdate(DocumentEvent e) { noteModified(copy); }
-		});
 
 		noteList.onNewNote(copy);
 
