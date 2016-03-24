@@ -41,10 +41,9 @@ public class NoteListPanel extends JTree
 			                                              int row,
 			                                              boolean hasFocus)
 			{
-				if( leaf && ((Note)value).isDirty() )
-					setLeafIcon( dirtyLeafIcon );
-				else
-					setLeafIcon( defaultLeafIcon );
+				setLeafIcon( leaf && ((Note)value).isDirty()
+					? dirtyLeafIcon
+					: defaultLeafIcon );
 
 				return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 			}
