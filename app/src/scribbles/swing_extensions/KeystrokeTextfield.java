@@ -7,10 +7,7 @@ import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-/**
- * Created by warrens on 3/23/16.
- */
-public class KeystrokeTextfield extends JPlaceholderTextField
+public class KeystrokeTextfield extends JPlaceholderTextField implements JComponentHelpers
 {
 	private
 	@Nullable

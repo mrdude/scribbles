@@ -107,7 +107,7 @@ public class JMenuBuilder
 				item.setAccelerator(shortcut.keystroke());
 
 				//when this keyboard shortcut is changed, change the accelerator of the menu item
-				shortcut.addChangeListener( () -> item.setAccelerator(shortcut.keystroke()) );
+				shortcut.addChangeListener( (oldKs, newKs) -> item.setAccelerator(shortcut.keystroke()) );
 			}
 
 			menu.add(item);

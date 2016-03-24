@@ -22,7 +22,7 @@ public class StatusBar extends JPanel implements JComponentHelpers
 
 		searchTextField = new JPlaceholderTextField();
 		searchTextField.setPlaceholderText("Search (" +KeyboardShortcuts.noteSearch.toUserDisplayableString()+ ")");
-		KeyboardShortcuts.noteSearch.addChangeListener( () -> searchTextField.setPlaceholderText("Search (" +KeyboardShortcuts.noteSearch.toUserDisplayableString()+ ")") );
+		KeyboardShortcuts.noteSearch.addChangeListener( (oldKs, newKs) -> searchTextField.setPlaceholderText("Search (" +KeyboardShortcuts.noteSearch.toUserDisplayableString()+ ")") );
 
 		final JLabel caretPositionLabel = new JLabel();
 		caretPositionLabel.setText("0:0");

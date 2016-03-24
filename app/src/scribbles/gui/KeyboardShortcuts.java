@@ -2,6 +2,7 @@ package scribbles.gui;
 
 import com.google.common.collect.ImmutableList;
 import scribbles.Utils;
+import scribbles.listeners.ShortcutChangeListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -112,7 +113,7 @@ public class KeyboardShortcuts
 	//
 	private final String name, desc;
 	private KeyStroke keystroke;
-	private final CopyOnWriteArrayList<Runnable> changeListenerList = new CopyOnWriteArrayList<>();
+	private final CopyOnWriteArrayList<ShortcutChangeListener> changeListenerList = new CopyOnWriteArrayList<>();
 	private final boolean changeable;
 
 	private KeyboardShortcuts(String name, String desc, KeyStroke keystroke)
@@ -162,8 +163,9 @@ public class KeyboardShortcuts
 	{
 		if( changeable )
 		{
+			final KeyStroke oldKeystroke = this.keystroke;
 			this.keystroke = keystroke;
-			fireChangeEvent();
+			fireChangeEvent(oldKeystroke, keystroke);
 		}
 	}
 
@@ -173,19 +175,20 @@ public class KeyboardShortcuts
 		return name;
 	}
 
-	public void addChangeListener(Runnable changeListener)
+	public void addChangeListener(ShortcutChangeListener changeListener)
 	{
-		changeListenerList.add( changeListener );
+		if( changeable ) //there's no point in adding a change listener to a shortcut that won't change
+			changeListenerList.add( changeListener );
 	}
 
-	public void removeChangeListener(Runnable changeListener)
+	public void removeChangeListener(ShortcutChangeListener changeListener)
 	{
 		changeListenerList.remove( changeListener );
 	}
 
-	private void fireChangeEvent()
+	private void fireChangeEvent(KeyStroke oldKeystroke, KeyStroke newKeystroke)
 	{
-		for( Runnable p : changeListenerList )
-			p.run();
+		for( ShortcutChangeListener p : changeListenerList )
+			p.shortcutChanged(oldKeystroke, newKeystroke);
 	}
 }

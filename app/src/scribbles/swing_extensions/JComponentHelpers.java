@@ -12,6 +12,31 @@ public interface JComponentHelpers
 		setPreferredSize( dim );
 	}
 
+	Dimension getPreferredSize();
+	default int getPreferredWidth()
+	{
+		return getPreferredSize().width;
+	}
+
+	default int getPreferredHeight()
+	{
+		return getPreferredSize().height;
+	}
+
+	default void setPreferredWidth(double width)
+	{
+		final Dimension dim = new Dimension( getPreferredSize() );
+		dim.width = (int)width;
+		setPreferredSize(dim);
+	}
+
+	default void setPreferredHeight(double height)
+	{
+		final Dimension dim = new Dimension( getPreferredSize() );
+		dim.height = (int)height;
+		setPreferredSize(dim);
+	}
+
 	void setSize(int wid, int hei);
 	int getWidth();
 	int getHeight();

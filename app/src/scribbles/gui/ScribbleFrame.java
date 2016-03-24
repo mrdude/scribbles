@@ -93,9 +93,9 @@ public class ScribbleFrame extends JFrame implements JComponentHelpers, Scribble
 		//updateSearch key bindings
 		final InputMap inputMap = getRootPane().getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT );
 		inputMap.put( KeyboardShortcuts.noteSearch.keystroke(), "updateSearch" );
-		KeyboardShortcuts.noteSearch.addChangeListener( () -> {
-			inputMap.clear();
-			inputMap.put( KeyboardShortcuts.noteSearch.keystroke(), "updateSearch" );
+		KeyboardShortcuts.noteSearch.addChangeListener( (oldKs, newKs) -> {
+			inputMap.remove( oldKs );
+			inputMap.put( newKs, "updateSearch" );
 		} );
 
 		getRootPane().getActionMap().put("updateSearch", new AbstractAction() {
