@@ -13,7 +13,6 @@ public class Notebook
 	private final File file; //the file that this notebook is saved to
 	private final List<Note> noteList = new ArrayList<>();
 	private Note activeNote = null;
-	private final NotebookSearcher searcher = new NotebookSearcher(this);
 
 	private IOException ioException = null;
 
@@ -103,17 +102,43 @@ public class Notebook
 	 */
 	public int updateSearch(String searchString)
 	{
-		boolean needsRestyle = searcher.updateSearch(searchString);
+		//clear all search results
+		int resultCount = 0;
 
-		if( needsRestyle )
+		for( Note n : getNoteList() )
+			n.clearSearchHighlights();
+
+		//do the search
+		if( !searchString.isEmpty() )
 		{
 			for( Note n : getNoteList() )
-				n.clearSearchHighlights();
+			{
+				final String docText = n.getDocumentText();
+				for( int x = docText.indexOf(searchString); x != -1 && x < docText.length() - searchString.length(); x = docText.indexOf(searchString, x + 1) )
+				{
+					int row = 0;
+					int col = 0;
 
-			for( SearchResult res : searcher )
-				res.n.addSearchHighlight( res );
+					for( int y = 0; y < x; y++ )
+					{
+						switch( docText.charAt(y) )
+						{
+							case '\n':
+								row++;
+								col = 0;
+							default:
+								col++;
+								break;
+						}
+					}
+
+					final SearchResult res = new SearchResult(n, x, searchString.length(), row, col);
+					n.addSearchHighlight(res);
+					resultCount++;
+				}
+			}
 		}
 
-		return searcher.getSearchResultCount();
+		return resultCount;
 	}
 }
