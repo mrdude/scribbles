@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="scribbles:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/scribbles_jar</output-path>
+    <root id="archive" name="app.jar">
+      <element id="module-output" name="app" />
+      <element id="extracted-dir" path="$APPLICATION_HOME_DIR$/lib/annotations.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/guava/guava/17.0/guava-17.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.6.1/gson-2.6.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
